@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 using TMPro;
 using System;
@@ -9,11 +10,18 @@ public class SystemController : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] float levelLength = 100f;
     [SerializeField] float levelSpeed;
+    [SerializeField] string levelName;
+    [SerializeField] string nextLevelName;
+    [SerializeField] string endText = "Level Complete!";
+    [SerializeField] string startInfo = "";
+    [SerializeField] string endInfo = "";
 
     private GameObject finishCollider;
     private GameObject player;
     private GameObject mainCamera;
     private GameObject scoreText;
+    private GameObject infoText;
+    private GameObject mainText;
     private GameObject pauseMenu;
 
     private float score = 0f;
@@ -26,13 +34,14 @@ public class SystemController : MonoBehaviour
         finishCollider = GameObject.Find("FinishCollider");
         finishCollider.transform.position = new Vector3(0,14,levelLength);
 
-        player = Instantiate(playerPrefab, transform.position, Quaternion.identity);
 
         mainCamera = GameObject.Find("Camera");
         scoreText = GameObject.Find("ScoreText");
+        infoText = GameObject.Find("InfoText");
+        mainText = GameObject.Find("MainText");
         pauseMenu = GameObject.Find("Menu");
 
-        Play();
+        Restart();
     }
 
     void Update()
@@ -73,20 +82,38 @@ public class SystemController : MonoBehaviour
     }
 
     public void Finish(){
-        print("game over");
+        StartCoroutine(GameEnd());
     }
 
     public void Restart(){
-        if(!running){
-            Play();
+        if (player != null){
+            Destroy(player);
         }
-        Destroy(player);
-        player = Instantiate(playerPrefab, transform.position, Quaternion.identity);
+        player = Instantiate(playerPrefab, new Vector3(0,1,0), Quaternion.identity);
         mainCamera.GetComponent<CameraFollow>().SetCameraType(2);
+        Pause(false);
 
         //score
         time = 0f;
         score = 0f;
+
+        StartCoroutine(GameStart());
+    }
+
+    IEnumerator GameStart(){
+        infoText.GetComponent<TMP_Text>().text = startInfo;
+        mainText.GetComponent<TMP_Text>().text = levelName;
+        yield return new WaitForSeconds(0.5f);
+        Play();
+        yield return new WaitForSeconds(0.5f);
+        mainText.GetComponent<TMP_Text>().text = "";
+    }
+
+    IEnumerator GameEnd(){
+        infoText.GetComponent<TMP_Text>().text = endInfo;
+        mainText.GetComponent<TMP_Text>().text = endText;
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene(nextLevelName);
     }
 
     public void Play()
@@ -96,10 +123,10 @@ public class SystemController : MonoBehaviour
         pauseMenu.SetActive(false);
     }
 
-    public void Pause()
+    public void Pause(bool menu = true)
     {
         running = false;
         player.GetComponent<PlayerMovement>().Pause();
-        pauseMenu.SetActive(true);
+        pauseMenu.SetActive(menu);
     }
 }
