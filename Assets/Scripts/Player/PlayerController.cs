@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        movement.Rotate(Input.GetAxis("Horizontal"));
+        movement.Strafe(Input.GetAxis("Horizontal"));
         movement.Move(Input.GetAxis("Vertical"));
         if (Input.GetAxis("Jump") > 0){
             movement.Jump();

@@ -5,19 +5,20 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] float force;
-    [SerializeField] float torque;
+    [SerializeField] float strafeForce;
     [SerializeField] float jumpSpeed;
     [SerializeField] int groundLayer;
 
     private Rigidbody rb;
-    private bool isGrounded;
+
+    private bool isGrounded = true;
+    private bool running = true;
 
     private Vector3 velocity;
     private Vector3 angularVelocity;
 
     void Awake(){
         rb = gameObject.GetComponent<Rigidbody>();
-        isGrounded = true;
     }
 
     public void Move(float multiplier, bool absolute = false){
@@ -31,8 +32,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
     
-    public void Rotate(float turn){
-        rb.AddTorque(transform.up * torque * turn * Time.deltaTime);
+    public void Strafe(float multiplier){
+        rb.AddForce(Vector3.right * strafeForce * multiplier * Time.deltaTime);
     }
 
     public void Jump(){
@@ -60,15 +61,21 @@ public class PlayerMovement : MonoBehaviour
     }
     public void Play()
     {
-        rb.isKinematic = false;
-        rb.velocity = velocity;
-        rb.angularVelocity = angularVelocity;
+        if (!running){
+            running = true;
+            rb.isKinematic = false;
+            rb.velocity = velocity;
+            rb.angularVelocity = angularVelocity;
+        }
     }
 
     public void Pause()
     {
-        velocity = rb.velocity;
-        angularVelocity = rb.angularVelocity;
-        rb.isKinematic = true;
+        if(running){
+            running = false;
+            velocity = rb.velocity;
+            angularVelocity = rb.angularVelocity;
+            rb.isKinematic = true;
+        }
     }
 }

@@ -49,6 +49,10 @@ MonoBehaviour:
   playerPrefab: {fileID: 9128994948893945998, guid: 778767dd9c532624bac0bd3d879430b7, type: 3}
   levelLength: 100
   levelSpeed: 1
+  levelName: Default Level
+  endText: Level Complete!
+  startInfo: 
+  endInfo: 
 --- !u!1 &9023746876775540744
 GameObject:
   m_ObjectHideFlags: 0
